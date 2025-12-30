@@ -14,8 +14,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone_number')->nullable(); // Kolom untuk nomor telepon, nullable
-            $table->string('profile_image')->default('profiles/profile.png'); // Diubah ke path relatif di storage/app/public/
+            $table->string('phone_number')->nullable(); 
+            $table->string('profile_image')->default('profiles/profile.png');
             $table->rememberToken();
             $table->timestamps();
         });

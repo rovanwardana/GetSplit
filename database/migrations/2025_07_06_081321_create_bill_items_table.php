@@ -11,20 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('bill_items', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->enum('status', ['Pending', 'Partially', 'Completed'])->default('Pending');
-            $table->foreignId('bill_id')->constrained()->onDelete('cascade');
+
+            $table->foreignId('bill_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->integer('qty')->default(1);
+            $table->decimal('price', 10, 2);
+            $table->decimal('subtotal', 10, 2);
+
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('bill_items');
     }
 };

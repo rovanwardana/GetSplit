@@ -3,36 +3,42 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\BillItem;
+use App\Models\BillParticipant;
+use App\Models\User;
 
 class Bill extends Model
 {
-    protected $fillable = ['date', 'due_date', 'bill_type', 'bill_number', 'customer_id', 'split_method', 'notes', 'total_amount'];
+    protected $fillable = [
+        'user_id',
+        'name',
+        'type',
+        'split_method',
+        'bill_date',
+        'due_date',
+        'tax',
+        'discount',
+        'total_amount',
+        'notes',
+    ];
 
-    public function customer()
+    // Creator bill
+    public function user()
     {
-        return $this->belongsTo(User::class, 'customer_id');
+        return $this->belongsTo(User::class);
     }
 
-    public function participants()
-    {
-        return $this->belongsToMany(User::class, 'bill_user', 'bill_id', 'user_id')
-            ->withPivot('id', 'amount_to_pay', 'payment_status');
-    }
-
+    // Items dalam bill
     public function items()
     {
-        return $this->hasMany(Item::class, 'bill_id');
+        return $this->hasMany(BillItem::class);
     }
 
-    public function participantItems()
+    // Participants dalam bill
+    public function participants()
     {
-        return $this->hasManyThrough(
-            BillParticipantItem::class,
-            BillUser::class,
-            'bill_id', // Foreign key di bill_user yang menunjuk ke bills
-            'bill_user_id', // Foreign key di bill_participant_items yang menunjuk ke bill_user
-            'id', // Primary key di bills
-            'id' // Primary key di bill_user
-        )->with('item');
+        return $this->hasMany(BillParticipant::class);
     }
+
+
 }

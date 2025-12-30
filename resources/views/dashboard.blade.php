@@ -7,7 +7,7 @@
     <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+{{-- <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Left Section -->
     <div class="col-span-2 space-y-6">
 
@@ -66,7 +66,7 @@
             </ul>
         </div>
     </div>
-</div>
+</div> --}}
 
 @push('scripts')
 <script>

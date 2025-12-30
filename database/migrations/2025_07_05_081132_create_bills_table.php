@@ -13,17 +13,24 @@ return new class extends Migration
     {
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->date('due_date')->nullable(); // Diubah menjadi nullable
-            $table->string('bill_type');
-            $table->string('bill_number')->unique();
-            $table->foreignId('customer_id')->constrained('users')->onDelete('restrict'); // Diubah ke restrict
-            $table->enum('split_method', ['equal', 'custom'])->default('equal'); // Ditentukan nilai enum
+
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // creator
+            $table->string('name');
+            $table->string('type'); // food, transport, dll
+            $table->date('bill_date');
+            $table->date('due_date')->nullable();
+            $table->enum('split_method', ['equal', 'custom'])->default('equal');
+            $table->decimal('subtotal', 10, 2)->default(0);
+
+            $table->decimal('tax', 5, 2)->default(0); 
+            $table->decimal('discount', 10, 2)->default(0);
+            $table->decimal('total_amount', 10, 2)->default(0);
             $table->text('notes')->nullable();
-            $table->decimal('total_amount', 10, 2)->nullable();
+
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

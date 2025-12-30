@@ -11,20 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bill_user', function (Blueprint $table) {
+        Schema::create('bill_participants', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bill_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('restrict');
-            $table->unique(['bill_id', 'user_id']); // Menambahkan indeks unik
+
+            $table->foreignId('bill_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->decimal('amount_to_pay', 10, 2)->default(0);
+            $table->enum('payment_status', ['Pending', 'Paid'])->default('Pending');
+
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('bill_user');
+        Schema::dropIfExists('bill_participants');
     }
 };

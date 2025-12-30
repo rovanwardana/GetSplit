@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('bill_item_participant', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bill_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->integer('qty');
-            $table->decimal('price', 10, 2);
-            $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
+
+            $table->foreignId('bill_item_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('bill_participant_id')->constrained()->cascadeOnDelete();
+            $table->unique(['bill_item_id', 'bill_participant_id']);
+
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('bill_item_participant');
     }
 };

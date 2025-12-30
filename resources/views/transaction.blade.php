@@ -56,12 +56,13 @@
                             <td colspan="4" class="p-4 bg-gray-50">
                                 @php
                                     $withUser = $transaction->with ? \App\Models\User::find($transaction->with) : null;
-                                    $participants = $transaction->bill ? $transaction->bill->participants ?? [] : [];
+                                    $bill = $transaction->bill;
+                                    $participants = $bill ? $bill->participants : collect();
                                     $participantItems =
-                                        $transaction->bill && $transaction->bill->participantItems
-                                            ? $transaction->bill->participantItems->groupBy('bill_user_id')
+                                        $bill && $bill->participantItems
+                                            ? $bill->participantItems->groupBy('bill_participant_id')
                                             : collect();
-                                    $splitMethod = $transaction->bill->split_method ?? 'equal';
+                                    $splitMethod = $bill->split_method ?? 'equal';
                                 @endphp
                                 <div class="space-y-4">
                                     <h3 class="text-lg font-semibold text-gray-800">Detail Transaksi</h3>
@@ -81,9 +82,13 @@
                                                 @csrf
                                                 @foreach ($participants as $participant)
                                                     @php
-                                                        $billUserId = $participant->pivot->id;
-                                                        $userItems = $participantItems->get($billUserId, collect());
-                                                        $amountToPay = $participant->pivot->amount_to_pay ?? 0;
+                                                        $billParticipantId = $participant->id;
+                                                        $user = $participant->user;
+                                                        $userItems = $participantItems->get(
+                                                            $billParticipantId,
+                                                            collect(),
+                                                        );
+                                                        $amountToPay = $participant->amount_to_pay ?? 0;
                                                     @endphp
                                                     <div
                                                         class="ml-4 mt-2 border border-gray-200 p-3 rounded-lg bg-white shadow-sm">
@@ -108,12 +113,12 @@
                                                             <label class="text-sm text-gray-600">Status:</label>
                                                             <select
                                                                 class="border border-gray-300 rounded px-2 py-1 text-sm status-select"
-                                                                name="statuses[{{ $billUserId }}]">
+                                                                name="statuses[{{ $billParticipantId }}]">
                                                                 <option value="Pending"
-                                                                    {{ $participant->pivot->payment_status === 'Pending' ? 'selected' : '' }}>
+                                                                    {{ ($participant?->payment_status ?? 'Pending') === 'Pending' ? 'selected' : '' }}>
                                                                     Pending</option>
                                                                 <option value="Paid"
-                                                                    {{ $participant->pivot->payment_status === 'Paid' ? 'selected' : '' }}>
+                                                                    {{ ($participant?->payment_status ?? 'Pending') === 'Paid' ? 'selected' : '' }}>
                                                                     Paid</option>
                                                             </select>
                                                         </div>
