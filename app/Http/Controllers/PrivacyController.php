@@ -8,6 +8,6 @@ class PrivacyController extends Controller
 {
     public function index()
     {
-        return view('privacy');
+        return view('help.privacy');
     }
 }

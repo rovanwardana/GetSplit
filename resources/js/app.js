@@ -1,98 +1,71 @@
 import './bootstrap';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Toggle Sidebar
-    const toggleBtn = document.querySelector('#sidebar button');
-    const sidebar = document.getElementById('sidebar');
-    const labels = sidebar ? sidebar.querySelectorAll('.label') : [];
-    const mainContent = document.getElementById('mainContent');
 
-    if (toggleBtn && sidebar && mainContent) {
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('w-[220px]');
-            sidebar.classList.toggle('w-[90px]');
-            labels.forEach(label => label.classList.toggle('hidden'));
-            mainContent.classList.toggle('ml-[240px]');
-            mainContent.classList.toggle('ml-[80px]');
+    const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const dropdownIcon = document.getElementById('dropdownIcon');
+
+    if (profileDropdownBtn && profileDropdown && dropdownIcon) {
+        profileDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+            dropdownIcon.style.transform =
+                profileDropdown.classList.contains('hidden')
+                    ? 'rotate(0deg)'
+                    : 'rotate(180deg)';
         });
-    } else {
-        console.error('One or more sidebar elements not found:', { toggleBtn, sidebar, mainContent });
+
+        document.addEventListener('click', (e) => {
+            if (!profileDropdownBtn.contains(e.target) &&
+                !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.add('hidden');
+                dropdownIcon.style.transform = 'rotate(0deg)';
+            }
+        });
     }
 
-    // Logout Popup
-    const logoutLinks = document.querySelectorAll('a .label');
+    const logoutBtn = document.getElementById('logoutBtn');
     const logoutPopup = document.getElementById('logoutPopup');
-    const confirmLogoutBtn = document.getElementById('confirmLogout');
-    const cancelLogoutBtn = document.getElementById('cancelLogout');
+    const confirmLogout = document.getElementById('confirmLogout');
+    const cancelLogout = document.getElementById('cancelLogout');
+    const logoutForm = document.getElementById('logoutForm');
 
-    if (logoutLinks.length > 0 && logoutPopup && confirmLogoutBtn && cancelLogoutBtn) {
-        logoutLinks.forEach(link => {
-            if (link.textContent.trim() === 'Log out') {
-                const logoutLink = link.closest('a');
-                logoutLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    logoutPopup.classList.remove('hidden');
-                });
-            }
+    if (logoutBtn && logoutPopup && confirmLogout && cancelLogout && logoutForm) {
+
+        logoutBtn.addEventListener('click', () => {
+            profileDropdown?.classList.add('hidden');
+            dropdownIcon.style.transform = 'rotate(0deg)';
+            logoutPopup.classList.remove('hidden');
         });
 
-        confirmLogoutBtn.addEventListener('click', () => {
-            document.getElementById('logoutForm').submit();
+        cancelLogout.addEventListener('click', () => {
             logoutPopup.classList.add('hidden');
         });
 
-        cancelLogoutBtn.addEventListener('click', () => {
-            logoutPopup.classList.add('hidden');
-        });
-    } else {
-        console.error('Logout elements not found:', {
-            logoutLinks,
-            logoutPopup,
-            confirmLogoutBtn,
-            cancelLogoutBtn
-        });
-    }
-
-    // Notification Functionality
-    const notificationButton = document.getElementById('notificationButton');
-    const notificationPanel = document.getElementById('notificationPanel');
-    const notificationList = document.getElementById('notificationList');
-    const notificationBadge = document.getElementById('notification-badge');
-
-    if (notificationButton && notificationPanel && notificationList && notificationBadge) {
-        // Ambil data notifikasi saat halaman dimuat
-        fetch('/notifications')
-            .then(response => response.json())
-            .then(data => {
-                const count = data.count;
-
-                // Update badge
-                if (count > 0) {
-                    notificationBadge.textContent = count;
-                    notificationBadge.classList.remove('hidden');
-                }
-
-                // Masukkan HTML Blade
-                notificationList.innerHTML = data.html;
-            })
-            .catch(error => console.error('Error fetching notifications:', error));
-
-
-        // Toggle panel
-        notificationButton.addEventListener('click', () => {
-            notificationPanel.classList.toggle('hidden');
+        confirmLogout.addEventListener('click', () => {
+            logoutForm.submit(); 
         });
 
-        // Tutup panel saat klik di luar
-        document.addEventListener('click', (event) => {
-            if (!notificationButton.contains(event.target) && !notificationPanel.contains(event.target)) {
-                notificationPanel.classList.add('hidden');
+        logoutPopup.addEventListener('click', (e) => {
+            if (e.target === logoutPopup) {
+                logoutPopup.classList.add('hidden');
             }
         });
-    } else {
-        console.error('Notification elements not found:', { notificationButton, notificationPanel, notificationList, notificationBadge });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                logoutPopup.classList.add('hidden');
+            }
+        });
     }
 
-    // New Bill functionality
-    initializeNewBillForm();
+
+    const blur = document.getElementById('scrollBlur');
+    if (blur) {
+        window.addEventListener('scroll', () => {
+            blur.classList.toggle('opacity-100', window.scrollY > 10);
+            blur.classList.toggle('opacity-0', window.scrollY <= 10);
+        });
+    }
 });

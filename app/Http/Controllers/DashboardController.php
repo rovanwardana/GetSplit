@@ -3,80 +3,77 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\Bill;
 use App\Models\Transaction;
+use App\Models\Bill;
+use App\Models\BillParticipant;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        $userId = $user->id;
+        $userId = Auth::id();
 
-        // Menghitung "You are owed" (jumlah yang harus diterima)
-        // $youAreOwed = Bill::where('customer_id', $userId)
-        //     ->whereHas('participants', function ($query) {
-        //         $query->where('payment_status', 'Pending');
-        //     })
-        //     ->with(['participants' => function ($query) {
-        //         $query->where('payment_status', 'Pending');
-        //     }])
-        //     ->get()
-        //     ->sum(function ($bill) {
-        //         return $bill->participants->sum('pivot.amount_to_pay');
-        //     });
+        // Total bills created by user
+        $totalBills = Bill::where('user_id', $userId)->count();
 
-        // Menghitung "You owe" (jumlah yang harus dibayar)
-        // $youOwe = Bill::whereHas('participants', function ($query) use ($userId) {
-        //     $query->where('user_id', $userId)->where('payment_status', 'Pending');
-        // })
-        //     ->with(['participants' => function ($query) use ($userId) {
-        //         $query->where('user_id', $userId)->where('payment_status', 'Pending');
-        //     }])
-        //     ->get()
-        //     ->sum(function ($bill) {
-        //         return $bill->participants->where('id', Auth::id())->sum('pivot.amount_to_pay');
-        //     });
+        // Get bill IDs with partially paid transactions
+        $partialBillIds = Transaction::where('status', 'Partially')
+            ->pluck('bill_id')
+            ->toArray();
 
-        // Mengambil aktivitas terbaru
-        $recentActivities = Transaction::where(function ($query) use ($userId) {
-            $query->where('with', $userId)
-                ->orWhereHas('bill', function ($query) use ($userId) {
-                    $query->whereHas('participants', function ($query) use ($userId) {
-                        $query->where('user_id', $userId);
-                    });
-                });
-        })
-            ->with(['bill', 'bill.participants' => function ($query) use ($userId) {
-                $query->where('user_id', $userId)->orWhere('payment_status', 'Paid');
-            }])
-            ->orderBy('created_at', 'desc')
-            ->take(5)
-            ->get();
+        // Bills waiting for payment (partially paid)
+        $waitingBills = Bill::where('user_id', $userId)
+            ->whereIn('id', $partialBillIds)
+            ->with(['participants'])
+            ->latest()
+            ->get()
+            ->map(function ($bill) {
+                $bill->pending_participants = $bill->participants()
+                    ->where('payment_status', 'Pending')
+                    ->count();
+                $bill->total_pending = $bill->participants()
+                    ->where('payment_status', 'Pending')
+                    ->sum('amount_to_pay');
+                return $bill;
+            });
 
-        // Data untuk grafik
-        // $latestBill = Bill::where('customer_id', $userId)
-        //     ->orWhereHas('participants', function ($query) use ($userId) {
-        //         $query->where('user_id', $userId);
-        //     })
-        //     ->latest()
-        //     ->first();
+        // Quick stats
+        $pendingCount = Transaction::whereHas('bill', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->where('status', 'Pending')->count();
 
-        // $chartData = [
-        //     'labels' => [],
-        //     'amounts' => [],
-        //     'colors' => [],
-        // ];
+        $completedCount = Transaction::whereHas('bill', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->where('status', 'Completed')->count();
 
-        // if ($latestBill) {
-        //     $participants = $latestBill->participants;
-        //     foreach ($participants as $participant) {
-        //         $chartData['labels'][] = $participant->name;
-        //         $chartData['amounts'][] = $participant->pivot->amount_to_pay;
-        //         $chartData['colors'][] = sprintf('#%06X', mt_rand(0, 0xFFFFFF)); // Warna acak
-        //     }
-        // }
+        $monthlyCount = Bill::where('user_id', $userId)
+            ->whereMonth('bill_date', now()->month)
+            ->whereYear('bill_date', now()->year)
+            ->count();
 
-        return view('dashboard', compact( 'recentActivities'));
+        // Total amounts
+        $totalPendingAmount = BillParticipant::whereHas('bill', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->where('payment_status', 'Pending')
+          ->sum('amount_to_pay');
+
+        // Get completed bill IDs
+        $completedBillIds = Transaction::where('status', 'Completed')
+            ->pluck('bill_id')
+            ->toArray();
+
+        $totalCompletedAmount = Bill::where('user_id', $userId)
+            ->whereIn('id', $completedBillIds)
+            ->sum('total_amount');
+
+        return view('dashboard', compact(
+            'totalBills',
+            'waitingBills',
+            'pendingCount',
+            'completedCount',
+            'monthlyCount',
+            'totalPendingAmount',
+            'totalCompletedAmount'
+        ));
     }
 }

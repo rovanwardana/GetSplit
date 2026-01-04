@@ -6,7 +6,7 @@ class HelpController extends Controller
 {
     public function index()
     {
-        return view('help');
+        return view('help.help');
     }
 }
 

@@ -8,6 +8,6 @@ class TncController extends Controller
 {
     public function index()
     {
-        return view('tnc');
+        return view('help.tnc');
     }
 }

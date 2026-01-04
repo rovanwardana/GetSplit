@@ -1,81 +1,175 @@
 @extends('layouts.app')
-@vite(['resources/css/app.css', 'resources/js/app.js'])
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-semibold text-gray-800">Dashboard</h1>
-</div>
+    <div class="max-w-7xl mx-auto mt-8 mb-12">
 
-{{-- <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Left Section -->
-    <div class="col-span-2 space-y-6">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Welcome back, {{ Auth::user()->name }}! 👋</h1>
+            <p class="text-gray-600 mt-1">Here's your bill splitting overview</p>
+        </div>
 
-        <!-- You are owed -->
-        <div class="bg-gradient-to-r from-white to-blue-100 p-6 rounded-xl shadow flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-bold text-green-600">You are owed</h2>
-                <p class="text-3xl mt-2 text-green-600">Rp {{ number_format($youAreOwed, 2) }}</p>
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+            <!-- Card 1: Total Bills -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Total Bills</h3>
+                        <p class="text-3xl font-bold text-gray-800">{{ $totalBills }}</p>
+                        <p class="text-xs text-gray-500 mt-1">Bills you've created</p>
+                    </div>
+                    <div class="bg-blue-100 rounded-lg p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path fill-rule="evenodd"
+                                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <img src="{{ asset('assets/image/owed.svg') }}" alt="You are owed" class="w-40 h-40">
-        </div>
 
-        <!-- You owe -->
-        <div class="bg-gradient-to-r from-white to-blue-100 p-6 rounded-xl shadow flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-bold text-red-600">You owe</h2>
-                <p class="text-3xl mt-2 text-red-600">Rp {{ number_format($youOwe, 2) }}</p>
+            <!-- Card 2: Pending Amount -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Pending Payments</h3>
+                        <p class="text-3xl font-bold text-red-600">Rp
+                            {{ number_format($totalPendingAmount, 0, ',', '.') }}</p>
+                        <p class="text-xs text-gray-500 mt-1">Awaiting payment</p>
+                    </div>
+                    <div class="bg-red-100 rounded-lg p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <img src="{{ asset('assets/image/owe.svg') }}" alt="You owe" class="w-40 h-40">
+
+            <!-- Card 3: Completed Amount -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Completed</h3>
+                        <p class="text-3xl font-bold text-green-600">Rp
+                            {{ number_format($totalCompletedAmount, 0, ',', '.') }}</p>
+                        <p class="text-xs text-gray-500 mt-1">Fully settled bills</p>
+                    </div>
+                    <div class="bg-green-100 rounded-lg p-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
         </div>
 
-    </div>
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    <!-- Right Section -->
-    <div class="col-span-1">
-        <div class="bg-white p-6 rounded-xl shadow">
-            <h2 class="text-lg font-semibold text-gray-800">Recent Activity</h2>
-            <ul class="mt-4 space-y-4 text-gray-700">
-                @php
-                    $today = now()->startOfDay();
-                    $yesterday = now()->subDay()->startOfDay();
-                    $groupedActivities = $recentActivities->groupBy(function ($activity) use ($today, $yesterday) {
-                        $createdAt = $activity->created_at;
-                        if ($createdAt->isToday()) return 'Today';
-                        if ($createdAt->isYesterday()) return 'Yesterday';
-                        return $createdAt->format('d M Y');
-                    });
-                @endphp
+            <!-- Left Section: Bills Overview -->
+            <div class="lg:col-span-2">
 
-                @foreach ($groupedActivities as $date => $activities)
-                    <h2 class="text-lg font-semibold text-gray-700 mt-4">{{ $date }}</h2>
-                    @foreach ($activities as $activity)
-                        <li class="flex justify-between items-center" data-notify="true">
-                            @if ($activity->bill && $activity->bill->participants->where('user_id', Auth::id())->first()?->pivot->payment_status === 'Pending')
-                                <span>💰 You owe {{ $activity->bill->participants->where('user_id', $activity->with)->first()->name ?? 'Someone' }}</span>
-                                <span class="font-semibold">Rp {{ number_format($activity->bill->participants->where('user_id', Auth::id())->first()->pivot->amount_to_pay, 2) }}</span>
-                            @elseif ($activity->bill && $activity->bill->participants->where('payment_status', 'Paid')->count() > 0)
-                                <span>💸 {{ $activity->bill->participants->where('payment_status', 'Paid')->first()->name ?? 'Someone' }} paid you</span>
-                                <span class="font-semibold">Rp {{ number_format($activity->bill->participants->where('payment_status', 'Paid')->first()->pivot->amount_to_pay, 2) }}</span>
-                            @else
-                                <span>📋 New bill created: <strong>{{ $activity->transaction_name }}</strong></span>
-                            @endif
-                        </li>
-                    @endforeach
-                @endforeach
-            </ul>
+                <!-- Bills Waiting for Payment -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-800">Partially Paid Bills</h2>
+                        <a href="{{ route('transaction.index') }}"
+                            class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                            View All →
+                        </a>
+                    </div>
+
+                    @if ($waitingBills->count() > 0)
+                        <div class="space-y-3">
+                            @foreach ($waitingBills->take(5) as $bill)
+                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-start justify-between gap-4">
+                                        <div class="flex-1">
+                                            <h3 class="font-semibold text-gray-800">{{ $bill->name }}</h3>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                {{ $bill->pending_participants }} participant(s) still pending
+                                            </p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="text-lg font-bold text-gray-800">
+                                                Rp {{ number_format($bill->total_pending, 0, ',', '.') }}
+                                            </p>
+                                            <span
+                                                class="inline-block mt-1 px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded">
+                                                Partial
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-12">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 mb-3"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-gray-500">No partially paid bills</p>
+                        </div>
+                    @endif
+                </div>
+
+            </div>
+
+            <!-- Right Section: CTA & Quick Info -->
+            <div class="lg:col-span-1 space-y-6">
+
+                <!-- CTA: Create New Bill -->
+                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg p-6 text-white">
+                    <div class="text-center">
+                        <h3 class="text-xl font-bold mb-2">
+                            Split a New Bill
+                        </h3>
+
+                        <p class="text-sm text-emerald-100 mb-6">
+                            Easily divide expenses with friends
+                        </p>
+
+                        <a href="{{ route('bills.create') }}"
+                            class="block w-full bg-white text-emerald-700 font-semibold py-3 px-6 rounded-lg
+                  hover:bg-emerald-50 transition-colors">
+                            Create New Bill
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Quick Stats</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                            <span class="text-sm text-gray-600">Pending</span>
+                            <span class="font-bold text-red-600">{{ $pendingCount }}</span>
+                        </div>
+                        <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                            <span class="text-sm text-gray-600">Completed</span>
+                            <span class="font-bold text-green-600">{{ $completedCount }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">This Month</span>
+                            <span class="font-bold text-blue-600">{{ $monthlyCount }}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
-</div> --}}
-
-@push('scripts')
-<script>
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-        document.getElementById(tabId).classList.remove('hidden');
-    }
-    // Tampilkan tab Bills secara default
-    document.getElementById('bills').classList.remove('hidden');
-</script>
-@endpush
 @endsection

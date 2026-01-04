@@ -8,6 +8,6 @@ class CookiesController extends Controller
 {
     public function index()
     {
-        return view('cookies');
+        return view('help.cookies');
     }
 }

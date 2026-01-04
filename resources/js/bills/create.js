@@ -1,8 +1,3 @@
-// ============================================
-// BILL CREATE - JAVASCRIPT LOGIC
-// ============================================
-
-// State variables
 let itemCount = 0;
 let participantCount = 0;
 let itemsData = [];

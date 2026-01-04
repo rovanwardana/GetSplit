@@ -5,20 +5,16 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\FriendsController;
-use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\HelpController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\TncController;
 use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\CookiesController;
 
-// Route untuk guest (tidak perlu login)
+// Route untuk guest
 Route::get('/', function () {
-    return view('index'); // Langsung ke index.blade.php
+    return view('index'); 
 })->name('home');
 
 Route::middleware('guest')->group(function () {
@@ -37,29 +33,16 @@ Route::middleware('auth')->group(function () {
     // Transaction routes
     Route::get('/transaction', [TransactionController::class, 'index'])->name('transaction.index');
     Route::post('/transaction', [TransactionController::class, 'store'])->name('transaction.store');
-    Route::post('/transaction/update-statuses', [BillController::class, 'updateStatuses'])->name('transaction.updateStatuses');
+    Route::post('/transaction/update-statuses', [BillController::class, 'updateParticipantStatuses']);
     Route::delete('/transaction/{id}', [BillController::class, 'destroy'])->name('transaction.destroy');
-
-    //Notif
-    Route::get('/notifications', [NotificationController::class, 'index']);
 
     // Bill routes
     Route::get('/bills/create', [BillController::class, 'create'])->name('bills.create');
     Route::post('/bills', [BillController::class, 'store'])->name('bills.store');
 
     // Profile routes
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show')->middleware('auth');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
-
-    // Friends routes
-    Route::get('/friends', [FriendsController::class, 'index'])->name('friends.index')->middleware('auth');
-    Route::post('/friends/add', [FriendsController::class, 'addFriend'])->name('friends.add')->middleware('auth');
-    Route::post('/friends/accept/{friendId}', [FriendsController::class, 'acceptFriend'])->name('friends.accept')->middleware('auth');
-    Route::post('/friends/remove/{friendId}', [FriendsController::class, 'removeFriend'])->name('friends.remove')->middleware('auth');
-    Route::post('/friends/search', [FriendsController::class, 'searchFriends'])->name('friends.search')->middleware('auth');
-    
-    // Settings routes
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::get('/profile', [UserController::class, 'edit'])->name('profile');
+    Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
 
     // Help routes
     Route::get('/help', [HelpController::class, 'index'])->name('help');

@@ -176,24 +176,32 @@ class BillController extends Controller
     /* =========================
      * UPDATE PARTICIPANT STATUS
      * ========================= */
-    public function updateParticipantStatus(Request $request)
+    public function updateParticipantStatuses(Request $request)
     {
         $request->validate([
-            'participant_id' => 'required|exists:bill_participants,id',
-            'status' => 'required|in:Pending,Paid',
+            'statuses' => 'required|array',
         ]);
 
-        $participant = BillParticipant::findOrFail($request->participant_id);
-        $participant->update(['payment_status' => $request->status]);
+        foreach ($request->statuses as $participantId => $status) {
+            $participant = BillParticipant::find($participantId);
 
-        $bill = $participant->bill;
+            if (!$participant) continue;
+
+            $participant->update([
+                'payment_status' => $status
+            ]);
+        }
+
+        // update transaction status
+        $billId = BillParticipant::find(array_key_first($request->statuses))->bill_id;
+
+        $bill = Bill::with('participants')->find($billId);
+
         $transaction = Transaction::where('bill_id', $bill->id)->first();
 
-        $statuses = $bill->participants->pluck('payment_status');
-
-        if ($statuses->every(fn($s) => $s === 'Paid')) {
+        if ($bill->participants->every(fn($p) => $p->payment_status === 'Paid')) {
             $transaction->update(['status' => 'Completed']);
-        } elseif ($statuses->contains('Paid')) {
+        } elseif ($bill->participants->contains(fn($p) => $p->payment_status === 'Paid')) {
             $transaction->update(['status' => 'Partially']);
         } else {
             $transaction->update(['status' => 'Pending']);

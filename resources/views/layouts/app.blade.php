@@ -4,172 +4,158 @@
 <head>
     <meta charset="UTF-8">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/image/logo2.svg') }}">
-    <title>@yield('title') | Ciciloo</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/image/logo.png') }}">
+    <title>@yield('title') | GetSplit</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
-<body class="bg-[#EEF1F9] px-[20px] py-[24px]">
+<body class="bg-[#EEF1F9]">
 
-    <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 h-[57px] bg-[#EEF1F9] flex justify-between items-center px-[57px] z-20">
-        <!-- Logo -->
-        <div class="flex items-center gap-2 text-[#071739]">
-            <img src="/assets/image/logo.svg" alt="logo" class="w-[117px] h-[52px] object-contain">
-            <span class="text-xl font-bold"></span>
+    <!-- Navbar -->
+    <nav
+        class="fixed top-6 left-1/2 -translate-x-1/2 
+           w-[92%] max-w-[1400px] h-[72px]
+           bg-gradient-to-b from-white/90 to-white/70
+           backdrop-blur-lg
+           rounded-full shadow-lg
+           flex items-center justify-between
+           px-10 z-20">
+
+        <!-- Left: Logo -->
+        <div class="flex items-center">
+            <img src="/assets/image/logo1.png" alt="logo" class="w-[70px] object-contain">
         </div>
 
-        <!-- User Actions -->
-        <div class="flex items-center gap-4">
-            <!-- Notifikasi -->
-            <div class="relative">
-                <button id="notificationButton" class="cursor-pointer focus:outline-none">
-                    <img src="/assets/icons/notifications.svg" alt="Notifications" class="w-[24px] h-[24px]">
+        <!-- Center / Right: Menu -->
+        <div class="flex items-center gap-3">
+
+            <!-- Dashboard -->
+            <a href="{{ route('dashboard') }}"
+                class="relative px-5 py-2 text-[#071739] font-medium
+                   transition-all duration-200
+                   {{ request()->routeIs('dashboard') ? 'font-bold' : '' }}
+                   hover:font-bold group">
+                Dashboard
+                <!-- Underline -->
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] bg-[#071739] transition-all duration-200
+                    {{ request()->routeIs('dashboard') ? 'w-3/4' : 'w-0 group-hover:w-3/4' }}">
+                </span>
+            </a>
+
+            <!-- Transaction -->
+            <a href="{{ route('transaction.index') }}"
+                class="relative px-5 py-2 text-[#071739] font-medium
+                   transition-all duration-200
+                   {{ request()->routeIs('transaction.*') ? 'font-bold' : '' }}
+                   hover:font-bold group">
+                Transaction
+                <!-- Underline -->
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] bg-[#071739] transition-all duration-200
+                    {{ request()->routeIs('transaction.*') ? 'w-3/4' : 'w-0 group-hover:w-3/4' }}">
+                </span>
+            </a>
+
+            <!-- New Bill (Primary) -->
+            <a href="{{ route('bills.create') }}"
+                class="px-6 py-2 rounded-full
+                   bg-[#071739] text-white font-medium
+                   transition-all duration-200
+                   hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#071739]/30">
+                New Bill
+            </a>
+
+            <!-- Profile Dropdown -->
+            <div class="relative ml-2">
+                <button id="profileDropdownBtn"
+                    class="flex items-center gap-2 px-4 py-2 rounded-full
+                       text-[#071739]
+                       hover:bg-[#071739] hover:text-white
+                       transition-all duration-200">
+
+                    <!-- User Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-[26px] h-[26px] fill-current">
+                        <path
+                            d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
+                    </svg>
+
+                    <!-- Arrow -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="transition-transform duration-200" id="dropdownIcon">
+                        <path d="m6 9 6 6 6-6" />
+                    </svg>
                 </button>
-                <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden"></span>
-                <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg p-4 z-30 border border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Notifications</h3>
-                    <div id="notificationList" class="space-y-3 max-h-64 overflow-y-auto">
-                        <!-- Isi akan diisi oleh JavaScript -->
-                    </div>
-                </div>
-            </div>
 
-            <!-- Profil -->
-            <a href="{{ route('profile.show') }}">
-                <img src="/assets/icons/user.svg" alt="User" class="w-[24px] h-[24px] cursor-pointer">
-            </a>
+                <div id="profileDropdown"
+                    class="hidden absolute right-0 mt-4 w-[200px]
+           bg-white rounded-2xl shadow-xl py-2
+           border border-gray-100
+           transition-all duration-200
+           origin-top-right">
 
-            <!-- Logout -->
-            <a href="#" class="flex items-center gap-2">
-                <img src="/assets/icons/log-out.svg" alt="Logout" class="w-[24px] h-[24px] cursor-pointer">
-            </a>
-        </div>
-    </header>
-
-    <!-- Main Layout -->
-    <div class="flex gap-[36px]">
-        <!-- Sidebar -->
-        <aside id="sidebar"
-            class="fixed top-[64px] left-0 w-[220px] h-[calc(100vh-64px-24px)] bg-[#071739] rounded-lg p-4 flex flex-col justify-between overflow-hidden z-10 transition-all duration-300 ml-[20px]">
-            <div class="flex flex-col gap-4">
-                <!-- Toggle Sidebar -->
-                <div class="flex justify-end">
-                    <button>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="w-6 h-6 text-white lucide lucide-panel-right-open-icon lucide-panel-right-open">
-                            <rect width="18" height="18" x="3" y="3" rx="2" />
-                            <path d="M15 3v18" />
-                            <path d="m10 15-3-3 3-3" />
+                    <!-- Profile -->
+                    <a href="{{ route('profile') }}"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
                         </svg>
+                        <span>Profile</span>
+                    </a>
+
+                    <!-- Help -->
+                    <a href="{{ route('help') }}"
+                        class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.02 2.575-2.438 2.88-.786.17-1.562.813-1.562 1.62V15" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01" />
+                        </svg>
+                        <span>Help</span>
+                    </a>
+
+                    <hr class="my-2 border-gray-200">
+
+                    <!-- Logout -->
+                    <button id="logoutBtn"
+                        class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors">
+                        <svg class="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 17l5-5-5-5" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H3" />
+                        </svg>
+                        <span class="font-medium">Logout</span>
                     </button>
                 </div>
-
-                <!-- Navigation Menu -->
-                @php
-                $menus = [
-                [
-                'route' => 'dashboard',
-                'label' => 'Dashboard',
-                'icon' =>
-                '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect width="7" height="9" x="3" y="3" rx="1" />
-                    <rect width="7" height="5" x="14" y="3" rx="1" />
-                    <rect width="7" height="9" x="14" y="12" rx="1" />
-                    <rect width="7" height="5" x="3" y="16" rx="1" />
-                </svg>',
-                ],
-                [
-                'route' => 'transaction.index',
-                'label' => 'Transaction',
-                'icon' =>
-                '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m16 3 4 4-4 4" />
-                    <path d="M20 7H4" />
-                    <path d="m8 21-4-4 4-4" />
-                    <path d="M4 17h16" />
-                </svg>',
-                ],
-                [
-                'route' => 'bills.create',
-                'label' => 'New Bill',
-                'icon' =>
-                '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14" />
-                    <path d="M12 5v14" />
-                </svg>',
-                ],
-                [
-                'route' => 'friends.index',
-                'label' => 'Friends',
-                'icon' =>
-                '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 2v2" />
-                    <path d="M17.915 22a6 6 0 0 0-12 0" />
-                    <path d="M8 2v2" />
-                    <circle cx="12" cy="12" r="4" />
-                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                </svg>',
-                ],
-                [
-                'route' => 'settings',
-                'label' => 'Settings',
-                'icon' =>
-                '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                    <circle cx="12" cy="12" r="3" />
-                </svg>',
-                ],
-                ];
-                @endphp
-
-                <!-- Navigation Menu -->
-                @foreach ($menus as $menu)
-                <a href="{{ route($menu['route']) }}"
-                    class="flex items-center gap-2 px-4 h-[52px] rounded-[9px] transition-all duration-200 {{ request()->routeIs($menu['route']) ? 'bg-[#A4B5C4] text-[#071739]' : 'text-white hover:bg-[#2a3950]' }}">
-                    {!! $menu['icon'] !!}
-                    <span class="label">{{ $menu['label'] }}</span>
-                </a>
-                @endforeach
             </div>
+        </div>
+    </nav>
 
-            <!-- Help & Logout -->
-            <div class="flex flex-col gap-4">
-                @include('logout_popup')
-                <a href="{{ route('help') }}"
-                    class="menu-item flex items-center gap-2 px-4 h-[52px] rounded-[9px] transition-all duration-200 
-                        {{ request()->routeIs('help') ? 'bg-[#A4B5C4] text-[#071739]' : 'text-white hover:bg-[#2a3950]' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" class="lucide lucide-circle-help-icon lucide-circle-help">
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                        <path d="M12 17h.01" />
-                    </svg>
-                    <span class="label">Help</span>
-                </a>
-                <a href="#"
-                    class="flex items-center gap-2 px-4 h-[52px] rounded-[9px] text-white hover:bg-[#2a3950] mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m16 17 5-5-5-5" />
-                        <path d="M21 12H9" />
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    </svg>
-                    <span class="label">Log out</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main id="mainContent" class="flex-1 ml-[240px] p-6 mt-[15px] transition-all duration-300">
-            @yield('content')
-        </main>
+    <!-- Blur layer -->
+    <div id="scrollBlur"
+        class="fixed top-0 left-0 w-full h-[109px]
+            pointer-events-none
+            backdrop-blur-xl
+            bg-gradient-to-b
+            from-white/70
+            via-white/40
+            to-white/0
+            opacity-0
+            transition-opacity duration-300
+            z-10">
     </div>
+
+    <!-- Logout Popup -->
+    @include('layouts.logout_popup')
+
+    <!-- Main Content -->
+    <main class="pt-[110px]">
+        @yield('content')
+    </main>
+
     @stack('scripts')
 </body>
+
 </html>
