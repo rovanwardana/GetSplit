@@ -26,14 +26,14 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Bill Name *</label>
                         <input type="text" name="name" id="bill-name" placeholder="e.g., Team Dinner at Restaurant"
-                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" required />
+                            class="w-full px-2 rounded-lg bg-gray-50 text-gray-700" required />
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Bill Type *</label>
                             <select name="type"
-                                class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" required>
+                                class="w-full px-2 rounded-lg bg-gray-50 text-gray-700" required>
                                 <option value="">Select bill type</option>
                                 <option value="food">Food & Beverages</option>
                                 <option value="transport">Transportation</option>
@@ -48,7 +48,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Date *</label>
                             <input type="date" name="date"
-                                class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                class="w-full px-2 bg-gray-50 rounded-lg text-gray-700"
                                 value="{{ date('Y-m-d') }}" required />
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Due Date *</label>
                         <input type="date" name="due_date"
-                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" required />
+                            class="w-full px-2 bg-gray-50 rounded-lg text-gray-700" required />
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
                 </div>
 
                 <button type="button" id="add-item"
-                    class="w-full px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium flex items-center justify-center gap-2">
+                    class="w-full px-2 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M5 12h14"/>
                         <path d="M12 5v14"/>
@@ -96,7 +96,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Split Method</label>
                     <select name="split_method" id="split-method"
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        class="w-full px-2 rounded-lg text-gray-700">
                         <option value="equal">Equal Split</option>
                         <option value="custom">Custom Split</option>
                     </select>
@@ -107,7 +107,7 @@
                 </div>
 
                 <button type="button" id="add-participant"
-                    class="w-full px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium flex items-center justify-center gap-2">
+                    class="w-full px-2 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M5 12h14"/>
                         <path d="M12 5v14"/>
@@ -133,7 +133,7 @@
                         <div class="flex items-center gap-2">
                             <input type="number" name="tax" id="tax-percentage" value="0"
                                 min="0" max="100" step="0.1"
-                                class="w-32 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                                class="w-24 px-2 rounded-lg   text-gray-700" />
                             <span class="text-gray-600 font-medium">%</span>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                         <div class="flex items-center gap-2">
                             <span class="text-gray-600 font-medium">Rp</span>
                             <input type="number" name="discount" id="discount" value="0" min="0"
-                                step="0.01" class="flex-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                                step="0.01" class="w-40 px-2 rounded-lg  text-gray-700" />
                         </div>
                     </div>
                 </div>
@@ -199,7 +199,7 @@
                 </div>
 
                 <textarea name="notes" rows="4" placeholder="Add any additional notes or comments here..."
-                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    class="w-full px-2 py-1 rounded-lg bg-gray-100 text-gray-700"></textarea>
             </div>
 
             <!-- Action Buttons -->

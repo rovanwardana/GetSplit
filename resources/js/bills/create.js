@@ -2,18 +2,12 @@ let itemCount = 0;
 let participantCount = 0;
 let itemsData = [];
 
-// ============================================
-// INITIALIZE
-// ============================================
 document.addEventListener('DOMContentLoaded', () => {
     initializeForm();
     setupEventListeners();
-    addItem(); // Add first item on load
+    addItem();
 });
 
-// ============================================
-// INITIALIZATION
-// ============================================
 function initializeForm() {
     itemCount = 0;
     participantCount = 0;
@@ -21,26 +15,39 @@ function initializeForm() {
 }
 
 function setupEventListeners() {
-    // Add item button
     document.getElementById('add-item').addEventListener('click', addItem);
 
-    // Add participant button
     document.getElementById('add-participant').addEventListener('click', addParticipant);
 
-    // Split method change
     document.getElementById('split-method').addEventListener('change', updateParticipantItems);
 
-    // Tax and discount inputs
-    document.getElementById('tax-percentage').addEventListener('input', calculateTotals);
-    document.getElementById('discount').addEventListener('input', calculateTotals);
+    const taxInput = document.getElementById('tax-percentage');
+    const discountInput = document.getElementById('discount');
+    
+    taxInput.addEventListener('input', calculateTotals);
+    discountInput.addEventListener('input', calculateTotals);
+    
+    setupAutoClearInput(taxInput);
+    setupAutoClearInput(discountInput);
 
-    // Form submit validation
     document.getElementById('new-bill-form').addEventListener('submit', validateForm);
 }
 
-// ============================================
-// ITEM MANAGEMENT
-// ============================================
+function setupAutoClearInput(input) {
+    input.addEventListener('focus', function() {
+        if (this.value === '0' || this.value === '0.00') {
+            this.value = '';
+        }
+    });
+    
+    input.addEventListener('blur', function() {
+        if (this.value === '' || this.value === '.') {
+            this.value = '0';
+        }
+    });
+}
+
+
 function addItem() {
     const itemsList = document.getElementById('items-list');
     const itemIndex = itemCount;
@@ -54,19 +61,19 @@ function addItem() {
             <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
                 <input type="text" name="items[${itemIndex}][name]" placeholder="Enter item name" 
-                    class="w-full rounded border-gray-300 focus:ring-blue-500 item-name" required />
+                    class="w-full px-2 rounded item-name text-gray-700" required />
             </div>
             <div class="w-full sm:w-24">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
                 <input type="number" name="items[${itemIndex}][qty]" value="1" min="1" 
-                    class="w-full rounded border-gray-300 focus:ring-blue-500 item-qty" required />
+                    class="w-full px-2 rounded item-qty text-gray-700" required />
             </div>
             <div class="w-full sm:w-32">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
                 <div class="flex items-center">
                     <span class="text-gray-500 mr-2">Rp.</span>
                     <input type="number" name="items[${itemIndex}][price]" value="0" min="0" step="0.01" 
-                        class="w-full rounded border-gray-300 focus:ring-blue-500 item-price" required />
+                        class="w-full px-2 rounded item-price text-gray-700" required />
                 </div>
             </div>
         </div>
@@ -84,11 +91,17 @@ function addItem() {
 
     itemsList.appendChild(itemRow);
 
-    // Add event listeners
-    itemRow.querySelector('.item-name').addEventListener('input', calculateTotals);
-    itemRow.querySelector('.item-qty').addEventListener('input', calculateTotals);
-    itemRow.querySelector('.item-price').addEventListener('input', calculateTotals);
+    const nameInput = itemRow.querySelector('.item-name');
+    const qtyInput = itemRow.querySelector('.item-qty');
+    const priceInput = itemRow.querySelector('.item-price');
+    
+    nameInput.addEventListener('input', calculateTotals);
+    qtyInput.addEventListener('input', calculateTotals);
+    priceInput.addEventListener('input', calculateTotals);
     itemRow.querySelector('.remove-item').addEventListener('click', () => removeItem(itemRow));
+
+    setupAutoClearInput(qtyInput);
+    setupAutoClearInput(priceInput);
 
     itemCount++;
     calculateTotals();
@@ -100,9 +113,6 @@ function removeItem(itemRow) {
     updateParticipantItems();
 }
 
-// ============================================
-// PARTICIPANT MANAGEMENT
-// ============================================
 function addParticipant() {
     const participantsList = document.getElementById('participants-list');
     const participantIndex = participantCount;
@@ -115,7 +125,7 @@ function addParticipant() {
         <div class="flex-1">
             <label class="block text-sm font-medium text-gray-700 mb-1">Participant Name</label>
             <input type="text" name="participants[${participantIndex}][name]" placeholder="Enter participant name" 
-                class="w-full rounded border-gray-300 focus:ring-blue-500 participant-name" required />
+                class="w-full px-2 rounded participant-name text-gray-700" required />
         </div>
         <div class="w-full sm:w-12">
             <button type="button" class="text-red-600 hover:text-red-700 remove-participant mt-6">
@@ -142,9 +152,6 @@ function removeParticipant(participantRow) {
     updateParticipantItems();
 }
 
-// ============================================
-// CALCULATIONS
-// ============================================
 function calculateTotals() {
     // Collect items data
     itemsData = [];
@@ -157,7 +164,6 @@ function calculateTotals() {
         const price = parseFloat(row.querySelector('.item-price').value || 0);
         const total = qty * price;
 
-        // Update item total display
         row.querySelector('.item-total').textContent = total.toLocaleString('id-ID');
 
         itemsData.push({
@@ -171,29 +177,21 @@ function calculateTotals() {
         subtotal += total;
     });
 
-    // Get tax and discount
     const discount = parseFloat(document.getElementById('discount').value || 0);
     const taxPercentage = parseFloat(document.getElementById('tax-percentage').value || 0);
     
-    // Calculate tax from (subtotal - discount)
     const taxAmount = ((subtotal - discount) * taxPercentage) / 100;
     
-    // Calculate grand total
     const totalAmount = subtotal - discount + taxAmount;
 
-    // Update display
     document.getElementById('subtotal').textContent = subtotal.toLocaleString('id-ID');
     document.getElementById('discount-amount').textContent = discount.toLocaleString('id-ID');
     document.getElementById('tax-amount').textContent = taxAmount.toLocaleString('id-ID');
     document.getElementById('total-amount').textContent = totalAmount.toLocaleString('id-ID');
 
-    // Update split summary
     updateSplitSummary();
 }
 
-// ============================================
-// CUSTOM SPLIT UI
-// ============================================
 function updateParticipantItems() {
     const splitMethod = document.getElementById('split-method').value;
     const participantItemsContainer = document.getElementById('participant-items');
@@ -204,11 +202,9 @@ function updateParticipantItems() {
         return;
     }
 
-    // Show custom split UI
     participantItemsContainer.classList.remove('hidden');
     participantItemsContainer.innerHTML = '';
 
-    // Get all participants
     const participants = [];
     document.querySelectorAll('.participant-row').forEach(row => {
         const participantIndex = row.dataset.participantIndex;
@@ -218,7 +214,6 @@ function updateParticipantItems() {
         }
     });
 
-    // Create custom split inputs for each participant
     participants.forEach(participant => {
         const participantDiv = document.createElement('div');
         participantDiv.className = 'bg-gray-50 p-4 rounded-lg mb-4';
@@ -227,7 +222,6 @@ function updateParticipantItems() {
         itemsHtml += '<div class="space-y-2">';
 
         itemsData.forEach(item => {
-            // Get previous value if exists
             const existingInput = document.querySelector(
                 `input[name="participants[${participant.index}][items][${item.index}][qty]"]`
             );
@@ -242,7 +236,7 @@ function updateParticipantItems() {
                         min="0" 
                         max="${item.qty}" 
                         step="1" 
-                        class="w-20 rounded border-gray-300 focus:ring-blue-500 participant-item-qty" 
+                        class="w-20 px-2 rounded participant-item-qty text-gray-700" 
                         data-participant-index="${participant.index}"
                         data-item-index="${item.index}" />
                 </div>
@@ -254,24 +248,20 @@ function updateParticipantItems() {
         participantItemsContainer.appendChild(participantDiv);
     });
 
-    // Add event listeners to custom split inputs
     document.querySelectorAll('.participant-item-qty').forEach(input => {
         input.addEventListener('input', updateSplitSummary);
+        setupAutoClearInput(input);
     });
 
     updateSplitSummary();
 }
 
-// ============================================
-// SPLIT SUMMARY
-// ============================================
 function updateSplitSummary() {
     const splitSummary = document.getElementById('split-summary');
     splitSummary.innerHTML = '';
 
     const splitMethod = document.getElementById('split-method').value;
 
-    // Get all participants
     const participants = [];
     document.querySelectorAll('.participant-row').forEach(row => {
         const participantIndex = row.dataset.participantIndex;
@@ -286,7 +276,6 @@ function updateSplitSummary() {
         return;
     }
 
-    // Get totals
     const subtotal = itemsData.reduce((sum, item) => sum + item.total, 0);
     const discount = parseFloat(document.getElementById('discount').value || 0);
     const taxPercentage = parseFloat(document.getElementById('tax-percentage').value || 0);
@@ -294,7 +283,6 @@ function updateSplitSummary() {
     const totalAmount = subtotal - discount + taxAmount;
 
     if (splitMethod === 'equal') {
-        // Equal split
         const perPerson = totalAmount / participants.length;
 
         participants.forEach(participant => {
@@ -303,7 +291,6 @@ function updateSplitSummary() {
             splitSummary.appendChild(li);
         });
     } else {
-        // Custom split
         const participantTotals = {};
 
         participants.forEach(participant => {
@@ -329,7 +316,6 @@ function updateSplitSummary() {
             });
         });
 
-        // Calculate proportional tax and discount for each participant
         Object.values(participantTotals).forEach(participant => {
             const proportion = subtotal > 0 ? participant.subtotal / subtotal : 0;
             const taxShare = taxAmount * proportion;
@@ -350,9 +336,6 @@ function updateSplitSummary() {
     }
 }
 
-// ============================================
-// FORM VALIDATION
-// ============================================
 function validateForm(event) {
     // Check items
     const itemRows = document.querySelectorAll('.item-row');
