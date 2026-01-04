@@ -1,6 +1,6 @@
-# GetSplit (Ciciloo)
+# GetSplit
 
-GetSplit adalah aplikasi web berbasis **Laravel** yang digunakan untuk **mencatat, membagi, dan melacak pembayaran tagihan (split bill)** secara praktis bersama teman atau kelompok.
+GetSplit adalah aplikasi web berbasis **Laravel** yang digunakan untuk **mencatat, membagi, dan melacak pembayaran tagihan (split bill)** bersama teman atau kelompok.
 
 Project ini dikembangkan sebagai bagian dari **Project & Manual Book Hak Kekayaan Intelektual (HKI)**.
 
@@ -98,7 +98,7 @@ npm run dev
 php artisan serve
 ```
 
-Akses aplikasi melalui:
+Akses web melalui:
 
 ```
 http://127.0.0.1:8000
@@ -106,7 +106,7 @@ http://127.0.0.1:8000
 
 ---
 
-## 🧠 Alur Singkat Penggunaan
+## 🧠 Alur Penggunaan
 
 1. User masuk ke Landing Page
 2. User melakukan **registrasi / login**
@@ -124,10 +124,4 @@ http://127.0.0.1:8000
 
 * **Nama** : I Made Rovan Puja Wardana
 * **Program Studi** : Informatika
-* **Fokus Project** : Web Application
-
----
-
-Project ini dikembangkan untuk keperluan akademik dan HKI. Seluruh hak cipta dilindungi.
-
----
+* **Project** : Web Application
